@@ -7,40 +7,40 @@
 
 enum WireType Test1_message_fields[] = { WIRETYPE_VARINT };
 
+int Test1_new(struct Test1** test1) {
+	*test1 = (struct Test1*)malloc(sizeof(struct Test1));
+	if (*test1 == NULL)
+		return 0;
+	(*test1)->a = 0;
+	return 1;
+}
+
+int Test1_free(struct Test1* test1) {
+	free(test1);
+	return 1;
+}
+
 int Test1_protobuf_encode(struct Test1* incoming, unsigned char* buffer, size_t max_buffer_length, size_t* bytes_written) {
-	int counter = 0;
-	for(int i = 0; i < 1; i++) {
-		// push the field number and wire type together
-		unsigned int types_val = Test1_message_fields[i];
-		unsigned int field_no = (i + 1) << 3;
-		unsigned long long field = field_no | types_val;
-		unsigned char bytes_processed;
-		char* b = (char*)buffer;
-		varint_encode(field, b, max_buffer_length, &bytes_processed);
-		counter += (unsigned int)bytes_processed;
-		varint_encode(incoming->a, &b[counter], max_buffer_length - counter, &bytes_processed);
-		counter += (unsigned int)bytes_processed;
-	}
-	*bytes_written = counter;
+	protobuf_encode_varint(1, Test1_message_fields[0], incoming->a, buffer, max_buffer_length, bytes_written);
 	return 1;
 }
 
 int Test1_protobuf_decode(unsigned char* buffer, size_t buffer_length, struct Test1** output) {
 	int pos = 0;
-	*output = (struct Test1*)malloc(sizeof(struct Test1));
-	if (*output == NULL)
+	if (Test1_new(output) == 0)
 		return 0;
 
 	while (pos < buffer_length) { // loop through buffer
-		unsigned char bytes_read;
-		char* b = (char*) buffer;
-		unsigned long long result = varint_decode(&b[pos], buffer_length - pos, &bytes_read);
-		pos += (unsigned int)bytes_read;
-		int field_no = result >> 3;
-		int field_type = field_no & result;
+		size_t bytes_read = 0;
+		int field_no;
+		enum WireType field_type;
+		if (protobuf_decode_field_and_type(buffer, buffer_length, &field_no, &field_type, &bytes_read) == 0) {
+			Test1_free(*output);
+			return 0;
+		}
 		switch (field_no) {
 			case (1):
-				(*output)->a = varint_decode(&b[pos], buffer_length - pos, &bytes_read);
+				(*output)->a = varint_decode(&buffer[pos], buffer_length - pos, &bytes_read);
 				pos += (unsigned int)bytes_read;
 				break;
 		}

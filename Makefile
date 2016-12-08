@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -O0 -g3 -Wall
 LFLAGS = 
 DEPS = protobuf.h
-OBJS = testit.o protobuf.o varint.o Test1_protobuf.o
+OBJS = testit.o protobuf.o varint.o Test1_protobuf.o Test2_protobuf.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)

@@ -20,4 +20,50 @@ enum WireType {
 	WIRETYPE_32BIT
 };
 
+/***
+ * encode a string into the buffer
+ * @param field_number the field number
+ * @param incoming the string value
+ * @param buffer the pointer to where to place the encoded value
+ * @param max_buffer_length the buffer length remaining
+ * @param bytes_written the number of bytes written
+ * @returns true(1) on success
+ */
+int protobuf_encode_string(int field_number, enum WireType wire_type, const char* incoming, unsigned char* buffer,
+		size_t max_buffer_length, size_t* bytes_written);
+
+/**
+ * Pull a string from the protobuf buffer
+ * @param the buffer, positioned at the field size
+ * @param buffer_length the buffer length
+ * @param results the results (NOTE: will allocate memory)
+ * @param bytes_read the number of bytes read
+ * @returns true(1) on success
+ */
+int protobuf_decode_string(const unsigned char* buffer, size_t buffer_length, char** results, size_t* bytes_read);
+
+/***
+ * encode a varint into the buffer
+ * @param field_number the field number
+ * @param field_type the field type
+ * @param incoming the value
+ * @param buffer the pointer to where to place the encoded value
+ * @param max_buffer_length the buffer length remaining
+ * @param bytes_written the number of bytes written
+ * @returns true(1) on success
+ */
+int protobuf_encode_varint(int field_number, enum WireType field_type, unsigned long long incoming, unsigned char* buffer,
+		size_t max_buffer_length, size_t* bytes_written);
+
+/***
+ * retrieve field number and field type from current buffer at position 0
+ * @param buffer the incoming buffer
+ * @param buffer_length the length of the buffer
+ * @param field_no the resultant field number
+ * @param field_type the field type
+ * @param bytes_read the number of bytes read from the buffer
+ */
+int protobuf_decode_field_and_type(const unsigned char* buffer, int buffer_length, int *field_no, enum WireType *field_type, size_t* bytes_read);
+
+
 #endif /* PROTOBUF_H_ */

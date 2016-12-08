@@ -1,6 +1,5 @@
 #include <assert.h>
 #include "varint.h"
-#define NULL 0
 
 static const char MSB = 0x80;
 static const char MSBALL = ~0x7F;
@@ -38,15 +37,16 @@ int varint_encoding_length(unsigned long long n) {
  * @param bytes the length written
  * @returns a pointer to the buf
  */
-char* varint_encode(unsigned long long n, char* buf, int len, unsigned char* bytes) {
-  char* ptr = buf;
+unsigned char* varint_encode(const unsigned long long n, unsigned char* buf, int len, size_t* bytes) {
+  unsigned char* ptr = buf;
+  unsigned long long copy = n;
 
-  while (n & MSBALL) {
-    *(ptr++) = (n & 0xFF) | MSB;
-    n = n >> 7;
+  while (copy & MSBALL) {
+    *(ptr++) = (copy & 0xFF) | MSB;
+    copy = copy >> 7;
     assert((ptr - buf) < len);
   }
-  *ptr = n;
+  *ptr = copy;
   if (bytes != NULL) *bytes = ptr - buf + 1;
 
   return buf;
@@ -59,10 +59,10 @@ char* varint_encode(unsigned long long n, char* buf, int len, unsigned char* byt
  * @param bytes number of bytes processed
  * @returns the value decoded
  */
-unsigned long long varint_decode(char* buf, int len, unsigned char* bytes) {
+unsigned long long varint_decode(const unsigned char* buf, int len, size_t* bytes) {
   unsigned long long result = 0;
   int bits = 0;
-  char *ptr = buf;
+  const unsigned char* ptr = buf;
   unsigned long long ll;
   while (*ptr & MSB) {
     ll = *ptr;

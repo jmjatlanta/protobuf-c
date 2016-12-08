@@ -16,12 +16,16 @@ int testit(const char* name, int (*func)(void)) {
 
 const char* names[] = {
 		"test_write_simple",
+		"test_write_negative",
+		"test_write_string",
 		"test_rightshift",
 		"test_varint"
 };
 
 int (*funcs[])(void) = {
 		test_write_simple,
+		test_write_negative,
+		test_write_string,
 		test_rightshift,
 		test_varint
 };

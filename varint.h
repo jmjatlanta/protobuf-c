@@ -1,5 +1,9 @@
+/***
+ * handles varint
+ */
 #ifndef _VARINT_H_
 #define _VARINT_H_
+#include <stdlib.h>
 
 /**
  * Encode an unsigned long long into a varint
@@ -9,7 +13,7 @@
  * @param bytes the length written
  * @returns a pointer to the buf
  */
-char* varint_encode(unsigned long long n, char* buf, int len, unsigned char* bytes);
+unsigned char* varint_encode(const unsigned long long n, unsigned char* buf, int len, size_t* bytes);
 
 /***
  * decode a varint
@@ -18,7 +22,7 @@ char* varint_encode(unsigned long long n, char* buf, int len, unsigned char* byt
  * @param bytes number of bytes processed
  * @returns the value decoded
  */
-unsigned long long varint_decode(char* buf, int buf_len, unsigned char* bytes);
+unsigned long long varint_decode(const unsigned char* buf, int len, size_t* bytes);
 
 /**
  *
